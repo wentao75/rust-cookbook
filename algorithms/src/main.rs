@@ -2,6 +2,7 @@
 //!
 //!
 use rand::distributions::Uniform;
+use rand::thread_rng;
 use rand::Rng;
 
 fn main() {
@@ -50,13 +51,12 @@ fn generate_random_numbers_within_range() {
     }
 }
 
-use rand::thread_rng;
+use rand_distr::{Distribution, Normal, NormalError};
 /// # 生成指定分布的随机数
 /// 默认的随机数使用均匀分布，`rand_distr` crate提供了其它类型的分布形态。通过创建一个分布实例，
 /// 通过随机数生成器`rand::Rng`就可以使用`Distribution::sample`在指定分布中采样。
 ///
 /// 下面的给出了使用`Normal`分布的演示，完整的分布实例可参考[文档](https://docs.rs/rand_distr/*/rand_distr/index.html).
-use rand_distr::{Distribution, Normal, NormalError};
 fn generate_random_numbers_with_distribution() -> Result<(), NormalError> {
     let mut rng = thread_rng();
     let normal = Normal::new(2.0, 3.0)?;
@@ -65,9 +65,6 @@ fn generate_random_numbers_with_distribution() -> Result<(), NormalError> {
     Ok(())
 }
 
-/// # 生成定制类型的随机值
-/// 随机生成一个tuple(i32, bool, f64)和用户定义的类型`Point`.
-/// 对`Standard`实现`Distribution`，这样就允许生成随机数
 use rand::distributions::Standard;
 
 #[derive(Debug)]
@@ -86,6 +83,9 @@ impl Distribution<Point> for Standard {
     }
 }
 
+/// # 生成定制类型的随机值
+/// 随机生成一个tuple(i32, bool, f64)和用户定义的类型`Point`.
+/// 对`Standard`实现`Distribution`，这样就允许生成随机数
 fn generate_random_values_of_custom_type() {
     let mut rng = rand::thread_rng();
     let rand_tuple = rng.gen::<(i32, bool, f64)>();
@@ -94,10 +94,10 @@ fn generate_random_values_of_custom_type() {
     println!("随机Point: {:?}", rand_point);
 }
 
-/// # 生成字符组成的随机密码
-/// 随机生成给定长度的ASCII字符（A-Z，a-z，0-9）组成的随机密码，使用`Alphanumeric`采样
 use rand::distributions::Alphanumeric;
 
+/// # 生成字符组成的随机密码
+/// 随机生成给定长度的ASCII字符（A-Z，a-z，0-9）组成的随机密码，使用`Alphanumeric`采样
 fn generate_random_passwords_from_alphanumeric_characters() {
     let rand_string: String = thread_rng()
         .sample_iter(&Alphanumeric)
@@ -110,7 +110,6 @@ fn generate_random_passwords_from_alphanumeric_characters() {
 
 /// # 生成用户定义字符组成的随机密码
 /// 随机生成一个给定长度的用户定义字符集的字符串
-
 fn generate_random_passwords_from_userdefined_characters() {
     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                             abcdefghijklmnopqrstuvwxyz\
