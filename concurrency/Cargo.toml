@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 crossbeam = "0.8"
 crossbeam-channel = "0.5"
+lazy_static = "1.4"
+error-chain = "0.7"

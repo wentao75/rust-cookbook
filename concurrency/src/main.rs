@@ -3,13 +3,24 @@
 //! 线程使用了`crossbeam`库，并发处理使用了`rayon`库
 extern crate crossbeam;
 extern crate crossbeam_channel;
-use crossbeam_channel::bounded;
-use std::thread;
+use crossbeam_channel::{bounded, unbounded};
+use lazy_static::lazy_static;
+use std::sync::Mutex;
 use std::time::Duration;
+use std::{thread, time};
+
 
 fn main() {
     // spawn_short_lived_thread();
-    create_parallel_pipeline();
+    // create_parallel_pipeline();
+    // pass_data_between_two_threads();
+    
+    if let Err(ref e) = maintain_global_mutable_state() {
+        println!("保持全局可变状态发生错误：{}", e);
+        for e in e.iter().skip(1) {
+            println!("错误原因：{}", e);
+        }
+    }
 }
 
 /// # 创建短周期线程
@@ -92,4 +103,60 @@ fn create_parallel_pipeline() {
         }
     })
     .unwrap();
+}
+
+/// # 两个线程间传输数据
+/// 下面的例子验证了在一个创建者和一个消费者（SPSC）环境下使用`crossbeam-channel`。
+///
+fn pass_data_between_two_threads() {
+    let (snd, rcv) = unbounded();
+    let n_msgs = 5;
+
+    crossbeam::scope(|s| {
+        s.spawn(|_| {
+            for i in 0..n_msgs {
+                snd.send(i).unwrap();
+                thread::sleep(time::Duration::from_millis(100));
+            }
+        });
+    })
+    .unwrap();
+
+    for _ in 0..n_msgs {
+        let msg = rcv.recv().unwrap();
+        println!("收到信息：{}", msg);
+    }
+}
+
+// 这里使用了`error_chain`库，统一完成错误处理模式，通过error_chain!宏定义引入，后续按照规则使用
+#[macro_use]
+extern crate error_chain;
+
+error_chain!{ }
+
+lazy_static! {
+    static ref FRUIT: Mutex<Vec<String>> = Mutex::new(Vec::new());
+}
+
+fn insert(fruit: &str) -> Result<()> {
+    let mut db = FRUIT.lock().map_err(|_| "获取MutextGuard失败")?;
+    db.push(fruit.to_string());
+    Ok(())
+}
+
+/// # 保持全局可变状态
+/// 使用`lazy_static.lazy_static`声明的全局状态创建一个全局可用的`static ref`，这需要一个`Mutex`来允许变更。
+/// `Mutex`封装确保状态不能同时被多个线程访问，以阻止竞争条件。`MutexGuard`需要被获得去读或者改动存储在`Mutex`中的数据。
+fn maintain_global_mutable_state() -> Result<()> {
+    insert("apple")?;
+    insert("orange")?;
+    insert("peach")?;
+    {
+        let db = FRUIT.lock().map_err(|_| "获取MutexGuard失败")?;
+        db.iter()
+            .enumerate()
+            .for_each(|(i, item)| println!("数据 {}: {}", i, item));
+    }
+    insert("grape")?;
+    Ok(())
 }
