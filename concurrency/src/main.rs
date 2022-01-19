@@ -9,14 +9,22 @@ use std::sync::Mutex;
 use std::time::Duration;
 use std::{thread, time};
 
-
 fn main() {
     // spawn_short_lived_thread();
+
     // create_parallel_pipeline();
+
     // pass_data_between_two_threads();
-    
-    if let Err(ref e) = maintain_global_mutable_state() {
-        println!("保持全局可变状态发生错误：{}", e);
+
+    // if let Err(ref e) = maintain_global_mutable_state() {
+    //     println!("保持全局可变状态发生错误：{}", e);
+    //     for e in e.iter().skip(1) {
+    //         println!("错误原因：{}", e);
+    //     }
+    // }
+
+    if let Err(ref e) = calculate_sha256_of_isofile() {
+        println!("计算文件散列值错误: {}", e);
         for e in e.iter().skip(1) {
             println!("错误原因：{}", e);
         }
@@ -132,7 +140,7 @@ fn pass_data_between_two_threads() {
 #[macro_use]
 extern crate error_chain;
 
-error_chain!{ }
+error_chain! {}
 
 lazy_static! {
     static ref FRUIT: Mutex<Vec<String>> = Mutex::new(Vec::new());
@@ -158,5 +166,73 @@ fn maintain_global_mutable_state() -> Result<()> {
             .for_each(|(i, item)| println!("数据 {}: {}", i, item));
     }
     insert("grape")?;
+    Ok(())
+}
+
+use ring::digest::{Context, Digest, SHA256};
+use std::fs::File;
+use std::io::{BufReader, Read};
+use std::path::Path;
+use std::sync::mpsc::channel;
+use threadpool::ThreadPool;
+use walkdir::WalkDir;
+
+// Verify the iso extension
+fn is_iso(entry: &Path) -> bool {
+    match entry.extension() {
+        Some(e) if e.to_string_lossy().to_lowercase() == "o" => true,
+        _ => false,
+    }
+}
+
+fn compute_digest<P: AsRef<Path>>(filepath: P) -> Result<(Digest, P)> {
+    let mut buf_reader = BufReader::new(File::open(&filepath).chain_err(|| "打开文件错误")?);
+    let mut context = Context::new(&SHA256);
+    let mut buffer = [0; 1024];
+
+    loop {
+        let count = buf_reader.read(&mut buffer).chain_err(|| "读取文件错误")?;
+        if count == 0 {
+            break;
+        }
+        context.update(&buffer[..count]);
+    }
+
+    Ok((context.finish(), filepath))
+}
+
+/// # 并发计算iso文件的散列值
+/// 计算当前文件目录中iso结尾文件的SHA256散列值。
+/// 一个线程池创建等同于系统核心数（通过`num_cpus::get`获得）的线程数量。
+/// `Walkdir::new`读取当前目录并调用`execute`去执行散列计算。
+fn calculate_sha256_of_isofile() -> Result<()> {
+    let pool = ThreadPool::new(num_cpus::get());
+
+    let (tx, rx) = channel();
+
+    println!("开始执行");
+    for entry in WalkDir::new(".")
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .filter(|e| {
+            // println!("过滤路径：{:?}", e.path());
+            !e.path().is_dir() && is_iso(e.path())
+        })
+    {
+        println!("查看路径：{:?}", entry.path().display());
+        let path = entry.path().to_owned();
+        let tx = tx.clone();
+        pool.execute(move || {
+            let digest = compute_digest(path);
+            tx.send(digest).chain_err(|| "无法发送数据！");
+        });
+    }
+    println!("执行结束！");
+    drop(tx);
+    for t in rx.iter() {
+        let (sha, path) = t?;
+        println!("{:?} {:?}", sha, path);
+    }
     Ok(())
 }
