@@ -7,4 +7,5 @@ members = [
     "ansi_terminal",
     "sqlite",
     "dbpostgres",
+    "dateandtime",
 ]

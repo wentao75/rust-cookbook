@@ -5,6 +5,15 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "calculate_sha256"
+
+[[bin]]
+name = "draw_fractal"
+
+[[bin]]
+name = "generate_thumbnails"
+
 [dependencies]
 crossbeam = "0.8"
 crossbeam-channel = "0.5"

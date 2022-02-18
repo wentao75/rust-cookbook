@@ -23,30 +23,9 @@ fn main() {
         }
     }
 
-    // if let Err(ref e) = explicit_threads::calculate_sha256_of_isofile() {
-    //     println!("计算文件散列值错误: {}", e);
-    //     for e in e.iter().skip(1) {
-    //         println!("错误原因：{}", e);
-    //     }
-    // }
-
-    // if let Err(ref e) = explicit_threads::draw_fractal_dispatching_work_to_a_threadpool() {
-    //     println!("绘制分型图错误：{}", e);
-    //     for e in e.iter().skip(1) {
-    //         println!("错误原因：{}", e);
-    //     }
-    // }
-
     parallel_tasks::mutate_elements_of_an_array_in_parallel();
     parallel_tasks::test_in_parallel();
     parallel_tasks::search_item_in_parallel();
     parallel_tasks::sort_in_parallel();
     parallel_tasks::map_reduce_in_parallel();
-
-    if let Err(ref e) = parallel_tasks::generate_thumbnails_in_parallel() {
-        println!("生成缩略图错误：{}", e);
-        for e in e.iter().skip(1) {
-            println!("错误原因：{}", e);
-        }
-    }
 }
