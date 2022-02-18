@@ -1,6 +1,8 @@
 use ansi_term::Colour::Red;
+use chrono::format::ParseError;
 use chrono::{DateTime, Duration, FixedOffset, Local, Utc};
 use chrono::{Datelike, Timelike};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use std::thread;
 use std::time::Instant;
 
@@ -20,6 +22,18 @@ fn main() {
 
     println!("{}", breakline);
     examine_date_and_time();
+
+    println!("{}", breakline);
+    convert_date_to_unix_timestamp();
+
+    println!("{}", breakline);
+    display_formatted_date_time();
+
+    println!("{}", breakline);
+    if let Err(err) = parse_string_into_datetime_struct() {
+        println!("解析时间字符串发生错误：{}", err);
+    }
+
     println!("{}", breakline);
 }
 
@@ -107,4 +121,53 @@ fn examine_date_and_time() {
         "And the Common Era began {} days ago",
         now.num_days_from_ce()
     );
+}
+
+fn convert_date_to_unix_timestamp() {
+    let date_time: NaiveDateTime = NaiveDate::from_ymd(2022, 2, 18).and_hms(21, 08, 06);
+    println!(
+        "Number of seconds between 1970-01-01 00:00:00 and {} is {}",
+        date_time,
+        date_time.timestamp()
+    );
+
+    let date_time_after_a_billion_seconds = NaiveDateTime::from_timestamp(1_000_000_000, 0);
+    println!(
+        "Date after a billion seconds sice 1970-01-01 00:00:00 was {}.",
+        date_time_after_a_billion_seconds
+    );
+}
+
+fn display_formatted_date_time() {
+    let now: DateTime<Utc> = Utc::now();
+
+    println!("UTC now is: {}", now);
+    println!("UTC now in RFC 2822 is: {}", now.to_rfc2822());
+    println!("UTC now in RFC 3339 is: {}", now.to_rfc3339());
+    println!(
+        "UTC now in a custom format is: {}",
+        now.format("%a %b %e %T %Y")
+    );
+}
+
+fn parse_string_into_datetime_struct() -> Result<(), ParseError> {
+    let rfc2822 = DateTime::parse_from_rfc2822("Tue, 1 Jul 2003 10:52:37 +0200")?;
+    println!("{}", rfc2822);
+
+    let rfc3339 = DateTime::parse_from_rfc3339("1996-12-19T16:39:57-08:00")?;
+    println!("{}", rfc3339);
+
+    let custom = DateTime::parse_from_str("5.8.1994 8:00 am +0000", "%d.%m.%Y %H:%M %P %z")?;
+    println!("{}", custom);
+
+    let time_only = NaiveTime::parse_from_str("23:56:04", "%H:%M:%S")?;
+    println!("{}", time_only);
+
+    let date_only = NaiveDate::parse_from_str("2015-09-05", "%Y-%m-%d")?;
+    println!("{}", date_only);
+
+    let no_timezone = NaiveDateTime::parse_from_str("2015-09-05 23:56:04", "%Y-%m-%d %H:%M:%S")?;
+    println!("{}", no_timezone);
+
+    Ok(())
 }
