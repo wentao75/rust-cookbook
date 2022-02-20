@@ -1,0 +1,36 @@
+[package]
+name = "encoding"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "percent-encode"
+
+[[bin]]
+name = "urlencoded"
+
+[[bin]]
+name = "hex-encode"
+
+[[bin]]
+name = "base64-encode"
+
+[[bin]]
+name = "read_csv"
+
+[[bin]]
+name = "transform_csv_column"
+
+[dependencies]
+percent-encoding = "2.1"
+url = "2.2"
+data-encoding = "2.3"
+base64 = "0.20.0-alpha"
+csv = "1.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.5"
+byteorder = "1.4"
+error-chain = "0.7"
+ansi_term = "0.12"

@@ -8,4 +8,5 @@ members = [
     "sqlite",
     "dbpostgres",
     "dateandtime",
+    "encoding",
 ]
