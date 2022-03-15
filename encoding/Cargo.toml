@@ -22,6 +22,18 @@ name = "read_csv"
 [[bin]]
 name = "transform_csv_column"
 
+[[bin]]
+name = "unstructured-json"
+
+[[bin]]
+name = "deserialize-toml-1"
+
+[[bin]]
+name = "deserialize-toml-2"
+
+[[bin]]
+name = "little-endian-byte-order"
+
 [dependencies]
 percent-encoding = "2.1"
 url = "2.2"
