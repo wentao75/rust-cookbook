@@ -9,4 +9,5 @@ members = [
     "dbpostgres",
     "dateandtime",
     "encoding",
+    "error_handling",
 ]
