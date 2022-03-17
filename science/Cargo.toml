@@ -1,0 +1,28 @@
+[package]
+name = "science"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "matrices-calculation"
+
+[[bin]]
+name = "serialize-matrix"
+
+[[bin]]
+name = "trigonometry"
+
+[[bin]]
+name = "complex"
+
+[[bin]]
+name = "bigintegers"
+
+[dependencies]
+approx = "0.5"
+ndarray = { version = "0.15", features=["approx-0_5"] }
+nalgebra = { version = "0.30", features = ["serde-serialize"] }
+num = "0.4"
+serde_json = "1.0"

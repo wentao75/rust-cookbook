@@ -10,4 +10,7 @@ members = [
     "dateandtime",
     "encoding",
     "error_handling",
+    "filesystem",
+    "systems",
+    "science",
 ]
