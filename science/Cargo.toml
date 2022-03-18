@@ -20,6 +20,18 @@ name = "complex"
 [[bin]]
 name = "bigintegers"
 
+[[bin]]
+name = "central-tendency-1"
+
+[[bin]]
+name = "central-tendency-2"
+
+[[bin]]
+name = "central-tendency-3"
+
+[[bin]]
+name = "standard-deviation"
+
 [dependencies]
 approx = "0.5"
 ndarray = { version = "0.15", features=["approx-0_5"] }
