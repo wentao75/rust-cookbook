@@ -1,0 +1,30 @@
+[package]
+name = "text"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "regexp-login"
+
+[[bin]]
+name = "regexp-hashtags"
+
+[[bin]]
+name = "regexp-phone"
+
+[[bin]]
+name = "regexp-replace"
+
+[[bin]]
+name = "unicode-graphemes"
+
+[[bin]]
+name = "fromstr-trait"
+
+[dependencies]
+regex = "1"
+lazy_static = "1.4"
+unicode-segmentation = "1.9"
+error-chain = "0.7"

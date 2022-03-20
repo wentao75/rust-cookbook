@@ -13,5 +13,6 @@ members = [
     "filesystem",
     "systems",
     "science",
+    "text",
     "web",
 ]
