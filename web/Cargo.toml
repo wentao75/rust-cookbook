@@ -18,28 +18,59 @@ name = "extract-markup-links"
 name = "url-basic"
 
 [[bin]]
-name = "base-url"
+name = "url-baseurl"
 
 [[bin]]
-name = "new-url"
+name = "url-new"
 
 [[bin]]
-name = "extract-url"
+name = "url-extract"
 
 [[bin]]
-name = "remove-parts"
+name = "url-remove-parts"
 
 [[bin]]
 name = "mime-string"
+
+[[bin]]
+name = "mime-filename"
+
+[[bin]]
+name = "mime-http"
+
+[[bin]]
+name = "clients-http-request"
+
+[[bin]]
+name = "clients-http-request-async"
+
+[[bin]]
+name = "webapi-query"
+
+[[bin]]
+name = "webapi-check"
+
+[[bin]]
+name = "download-file"
+
+[[bin]]
+name = "post-file"
+
+[[bin]]
+name = "download-partial"
+
+[[bin]]
+name = "basic-auth"
 
 [dependencies]
 lazy_static = "1.4"
 regex = "1"
 error-chain = "0.7"
-reqwest = {version = "0.11", features = ["blocking"] }
+reqwest = {version = "0.11", features = ["blocking", "json"]}
 select = "0.5"
 url = "2"
 mime = "0.3"
 serde = { version = "1", features = ["derive"] }
 tempdir = "0.3"
+tempfile = "3"
 tokio = { version = "1.17", features = ["full"] }
